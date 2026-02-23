@@ -265,7 +265,7 @@ function M.attach(buf)
         source = "buffer_tail"
         last_line = get_last_non_empty_line(line_buf)
       end
-      if not on_lines_logged and last_line ~= nil and last_line ~= "" then
+      if not on_lines_logged and last_line ~= nil and last_line ~= "" and last_line:lower():find("git", 1, true) then
         on_lines_logged = true
         debug_log(opts, string.format("terminal line in buf=%d line=%q", line_buf, last_line))
       end
