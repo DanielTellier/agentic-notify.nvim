@@ -267,6 +267,10 @@ function M.attach(buf)
 
       local matched_input = matches_patterns(last_line, opts.input_patterns)
 
+      debug_log(
+        opts, string.format("The line=%s matched_input=%s source=%s", last_line, tostring(matched_input), source)
+      )
+
       if matched_input then
         debug_log(
           opts, string.format("The matched line=%s matched_input=%s source=%s", last_line, tostring(matched_input), source)
