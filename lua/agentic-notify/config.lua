@@ -3,7 +3,7 @@ local M = {}
 M.defaults = {
   enabled = true,
   input_patterns = {
-    "^-->NEEDS_INPUT<--$",
+    "^%s*%-%->NEEDS_INPUT<%-%-%s*$",
   },
   update_title = true,
   title_backend = "auto",

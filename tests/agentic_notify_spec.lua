@@ -11,6 +11,11 @@ local defaults = config.get()
 assert_eq(defaults.enabled, true, "default enabled should be true")
 assert_eq(defaults.title_backend, "auto", "default title_backend should be auto")
 assert_eq(type(defaults.input_patterns), "table", "default input_patterns should be table")
+assert_eq(
+  defaults.input_patterns[1],
+  "^%s*%-%->NEEDS_INPUT<%-%-%s*$",
+  "default input pattern should match NEEDS_INPUT marker with optional surrounding whitespace"
+)
 
 config.setup({
   enabled = false,

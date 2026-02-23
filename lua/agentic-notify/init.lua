@@ -248,7 +248,6 @@ function M.attach(buf)
   end
   entry.attached = true
   ensure_instance(buf, opts)
-  local on_lines_logged = false
 
   vim.api.nvim_buf_attach(buf, false, {
     on_detach = function(_, detach_buf)
@@ -265,13 +264,13 @@ function M.attach(buf)
         source = "buffer_tail"
         last_line = get_last_non_empty_line(line_buf)
       end
-      if not on_lines_logged and last_line ~= nil and last_line ~= "" and last_line:lower():find("git", 1, true) then
-        on_lines_logged = true
-        debug_log(opts, string.format("terminal line in buf=%d line=%q", line_buf, last_line))
-      end
+
       local matched_input = matches_patterns(last_line, opts.input_patterns)
 
       if matched_input then
+        debug_log(
+          opts, string.format("The matched line=%s matched_input=%s source=%s", last_line, tostring(matched_input), source)
+        )
         set_needs_input(line_buf, true, opts)
       elseif opts.clear_on_output and last_line ~= nil then
         clear_needs_input(line_buf, opts)
