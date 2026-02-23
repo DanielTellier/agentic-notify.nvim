@@ -46,12 +46,17 @@ local function emit_title(title, opts)
   local backend = select_title_backend(opts)
   local sanitized = sanitize_title(title)
 
+  local function write_escape(sequence)
+    local ok = pcall(vim.api.nvim_chan_send, vim.v.stderr, sequence)
+    if not ok then
+      vim.api.nvim_out_write(sequence)
+    end
+  end
+
   if backend == "tmux" then
-    vim.api.nvim_out_write(
-      "\027Ptmux;\027\027]0;" .. sanitized .. "\007\027\\"
-    )
+    write_escape("\027Ptmux;\027\027]0;" .. sanitized .. "\007\027\\")
   else
-    vim.api.nvim_out_write("\027]0;" .. sanitized .. "\007")
+    write_escape("\027]0;" .. sanitized .. "\007")
   end
 
   state.title.last = sanitized
