@@ -10,6 +10,7 @@ M.defaults = {
   ring_bell = false,
   clear_on_term_enter = true,
   clear_on_output = false,
+  debug_output = false,
 }
 
 local state = {

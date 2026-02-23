@@ -7,6 +7,15 @@ local function ring_bell()
   vim.api.nvim_out_write("\007")
 end
 
+local function debug_log(opts, msg)
+  if not opts or not opts.debug_output then
+    return
+  end
+  vim.schedule(function()
+    vim.notify("[agentic-notify] " .. msg, vim.log.levels.INFO)
+  end)
+end
+
 local function sanitize_title(title)
   if not title or title == "" then
     return "NVIM"
@@ -82,6 +91,51 @@ local function matches_patterns(line, patterns)
     end
   end
   return false
+end
+
+local function normalize_terminal_line(line)
+  if not line or line == "" then
+    return ""
+  end
+
+  -- Strip common terminal escape sequences and control characters so
+  -- pattern matching sees only visible text.
+  line = line:gsub("\027%[[0-9;?]*[ -/]*[@-~]", "")
+  line = line:gsub("\027%].-\007", "")
+  line = line:gsub("\027%].-\027\\", "")
+  line = line:gsub("[%z\001-\008\011\012\014-\031\127]", "")
+  line = line:gsub("\r", "")
+  return line
+end
+
+local function get_last_non_empty_line(buf)
+  local line_count = vim.api.nvim_buf_line_count(buf)
+  if line_count == 0 then
+    return nil
+  end
+
+  local tail_start = math.max(0, line_count - 200)
+  local lines = vim.api.nvim_buf_get_lines(buf, tail_start, line_count, false)
+  for i = #lines, 1, -1 do
+    local normalized = normalize_terminal_line(lines[i])
+    if normalized ~= "" then
+      return normalized
+    end
+  end
+  return nil
+end
+
+local function get_last_non_empty_from_lines(lines)
+  if not lines then
+    return nil
+  end
+  for i = #lines, 1, -1 do
+    local normalized = normalize_terminal_line(lines[i])
+    if normalized ~= "" then
+      return normalized
+    end
+  end
+  return nil
 end
 
 local function next_instance_id()
@@ -203,25 +257,30 @@ function M.attach(buf)
       if not opts.enabled then
         return
       end
-      local lines = vim.api.nvim_buf_get_lines(
-        line_buf,
-        firstline,
-        new_lastline,
-        false
-      )
-
-      local matched_input = false
-      for i = #lines, 1, -1 do
-        local line = lines[i]
-        if line ~= "" then
-          matched_input = matches_patterns(line, opts.input_patterns)
-          break
-        end
+      local changed_lines = vim.api.nvim_buf_get_lines(line_buf, firstline, new_lastline, false)
+      local source = "changed_lines"
+      local last_line = get_last_non_empty_from_lines(changed_lines)
+      if last_line == nil then
+        source = "buffer_tail"
+        last_line = get_last_non_empty_line(line_buf)
       end
+      local matched_input = matches_patterns(last_line, opts.input_patterns)
+      debug_log(
+        opts,
+        string.format(
+          "buf=%d source=%s first=%d new_last=%d line=%q matched=%s",
+          line_buf,
+          source,
+          firstline,
+          new_lastline,
+          last_line or "",
+          tostring(matched_input)
+        )
+      )
 
       if matched_input then
         set_needs_input(line_buf, true, opts)
-      elseif opts.clear_on_output then
+      elseif opts.clear_on_output and last_line ~= nil then
         clear_needs_input(line_buf, opts)
       end
     end,
@@ -317,5 +376,11 @@ function M.setup(opts)
     end
   end
 end
+
+M._private = {
+  normalize_terminal_line = normalize_terminal_line,
+  get_last_non_empty_line = get_last_non_empty_line,
+  get_last_non_empty_from_lines = get_last_non_empty_from_lines,
+}
 
 return M

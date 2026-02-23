@@ -62,6 +62,7 @@ require("agentic-notify").setup({
   ring_bell = false,
   clear_on_term_enter = true,
   clear_on_output = false,
+  debug_output = false,
 })
 ```
 
@@ -78,6 +79,8 @@ require("agentic-notify").setup({
   - `auto`: use tmux passthrough when `$TMUX` is set, otherwise OSC.
   - `osc`: write OSC title escape directly.
   - `tmux`: wrap OSC in tmux passthrough.
+- `debug_output`: when `true`, logs each inspected terminal output line and
+  whether it matched an input pattern.
 - Titles update immediately on state changes, even if the current window is not
   a terminal.
 - When the last tracked terminal closes, the title is restored to a best-effort
