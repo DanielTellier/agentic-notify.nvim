@@ -210,16 +210,16 @@ function M.attach(buf)
         false
       )
 
-      local matched = false
+      local matched_input = false
       for i = #lines, 1, -1 do
         local line = lines[i]
         if line ~= "" then
-          matched = matches_patterns(line, opts.input_patterns)
+          matched_input = matches_patterns(line, opts.input_patterns)
           break
         end
       end
 
-      if matched then
+      if matched_input then
         set_needs_input(line_buf, true, opts)
       elseif opts.clear_on_output then
         clear_needs_input(line_buf, opts)

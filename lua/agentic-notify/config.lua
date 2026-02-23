@@ -3,11 +3,7 @@ local M = {}
 M.defaults = {
   enabled = true,
   input_patterns = {
-    "waiting for input",
-    "press enter",
-    "press any key",
-    "^%s*>%s*$",
-    "^%s*:%s*$",
+    "^-->NEEDS_INPUT<--$",
   },
   update_title = true,
   title_backend = "auto",

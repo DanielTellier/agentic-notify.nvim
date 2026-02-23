@@ -20,10 +20,7 @@ Notify when a terminal buffer inside Neovim needs input by updating the
   config = function()
     require("agentic-notify").setup({
       input_patterns = {
-        "waiting for input",
-        "press enter",
-        "press any key",
-        "^%s*>%s*$",
+        "^-->NEEDS_INPUT<--$",
       },
       ring_bell = true,
       title_backend = "auto",
@@ -58,11 +55,7 @@ are detected.
 require("agentic-notify").setup({
   enabled = true,
   input_patterns = {
-    "waiting for input",
-    "press enter",
-    "press any key",
-    "^%s*>%s*$",
-    "^%s*:%s*$",
+    "^-->NEEDS_INPUT<--$",
   },
   title_backend = "auto",
   ring_bell = false,

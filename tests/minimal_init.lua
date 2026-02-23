@@ -1,6 +1,7 @@
 vim.opt.runtimepath:prepend(vim.fn.getcwd())
 
 vim.cmd("set rtp^=" .. vim.fn.getcwd())
+dofile("plugin/agentic-notify.lua")
 
 local ok, err = pcall(function()
   dofile("tests/agentic_notify_spec.lua")
