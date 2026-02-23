@@ -267,6 +267,13 @@ function M.attach(buf)
 
       local matched_input = matches_patterns(last_line, opts.input_patterns)
 
+      -- Check if line has "well" anywhere in it
+      if last_line and last_line:lower():find("well") then
+        debug_log(
+          opts, string.format("Found the word well")
+        )
+      end
+
       if matched_input then
         debug_log(
           opts, string.format("The matched line=%s matched_input=%s source=%s", last_line, tostring(matched_input), source)
