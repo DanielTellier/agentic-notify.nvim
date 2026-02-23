@@ -5,9 +5,10 @@ Notify when a terminal buffer inside Neovim needs input by updating the
 
 ## Features
 
-- Watches terminal buffers for configurable input patterns.
+- Watches terminal buffers for configurable input markers/patterns.
 - Updates the terminal tab title via OSC/tmux.
 - Optional bell on input-needed events.
+- Input-only state model (`N:TERM` and `N:INPUT TERM`).
 - Simple commands to enable/disable/attach.
 
 ## Installation
@@ -66,8 +67,13 @@ require("agentic-notify").setup({
 
 ### Notes
 
-- `input_patterns` are Lua patterns matched against the most recent terminal
-  output line.
+- `input_patterns` are Lua patterns matched against the most recent non-empty
+  terminal output line.
+- Recommended marker for agentic tools: `-->NEEDS_INPUT<--` (pattern:
+  `^-->NEEDS_INPUT<--$`).
+- There is no resolve marker/state anymore; input is cleared only by:
+  `clear_on_term_enter` (entering the terminal buffer) or `clear_on_output`
+  (any subsequent non-empty output).
 - `title_backend`:
   - `auto`: use tmux passthrough when `$TMUX` is set, otherwise OSC.
   - `osc`: write OSC title escape directly.
