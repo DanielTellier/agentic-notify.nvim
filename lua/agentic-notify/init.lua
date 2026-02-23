@@ -265,20 +265,9 @@ function M.attach(buf)
         last_line = get_last_non_empty_line(line_buf)
       end
       local matched_input = matches_patterns(last_line, opts.input_patterns)
-      debug_log(
-        opts,
-        string.format(
-          "buf=%d source=%s first=%d new_last=%d line=%q matched=%s",
-          line_buf,
-          source,
-          firstline,
-          new_lastline,
-          last_line or "",
-          tostring(matched_input)
-        )
-      )
 
       if matched_input then
+        debug_log(opts, string.format("found input pattern match in buf=%d line=%q", line_buf, last_line))
         set_needs_input(line_buf, true, opts)
       elseif opts.clear_on_output and last_line ~= nil then
         clear_needs_input(line_buf, opts)
